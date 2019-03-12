@@ -1,0 +1,41 @@
+USE [db_app_bonifico]
+GO
+/****** Object:  StoredProcedure [dbo].[usp_update_balance_and_operations]    Script Date: 12/03/2019 21:47:06 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[usp_update_balance_and_operations]
+	-- Add the parameters for the stored procedure here
+	@transaction_id nvarchar(50) = 0,
+	@customer_id int = 0, 
+	@account_number nchar(10) = 0,
+	@cro_id numeric(11,0) = 0
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- aggiorna il saldo del conto corrente
+	UPDATE accounts
+	SET balance = (SELECT a.balance FROM accounts a where a.customer_id = @customer_id and a.account_number = @account_number) - (SELECT t.amount FROM transactions t where t.transaction_id = @transaction_id)
+	WHERE customer_id = @customer_id and account_number = @account_number
+
+
+	-- inserire nuova entry nella tabella cro_operations
+	INSERT INTO cro_operations (cro_id, transaction_id)
+	VALUES (@cro_id, @transaction_id)
+
+    -- recupera le informazioni della transazione
+	SELECT t.*
+	FROM transactions t
+	where	t.transaction_id = @transaction_id 
+
+
+END

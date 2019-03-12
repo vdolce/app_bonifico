@@ -1,0 +1,34 @@
+USE [db_app_bonifico]
+GO
+/****** Object:  StoredProcedure [dbo].[usp_update_transactions]    Script Date: 12/03/2019 21:47:45 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[usp_update_transactions]
+	-- Add the parameters for the stored procedure here
+	@transaction_id nvarchar(50) = 0,
+	@request_id nchar(32) = 0,
+	@account_number nchar(10) = 0,
+	@execution_date date = null,
+	@iban_code nchar(27) = 0,
+	@payee_name nvarchar(20) = '', 
+	@payee_surname nvarchar(20) = '',
+	@description nvarchar(50) ='',
+	@amount decimal(18) = 0
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- inserire nuova entry nella tabella transactions
+	INSERT INTO transactions (transaction_id, request_id, account_number, execution_date, amount, iban_code, payee_name, payee_surname, description)
+	VALUES (@transaction_id, @request_id, @account_number, @execution_date, @amount, @iban_code, @payee_name, @payee_surname, @description)
+
+END
